@@ -48,8 +48,8 @@ public class ProductController {
     }
     
     @GetMapping("/dupes")
-    public List<Map<String, Object>> findDupes(@RequestParam String name) throws Exception {
+    public List<Map<String, Object>> findDupes(@RequestParam String name, @RequestParam String category) throws Exception {
         DupeFinderService service = new DupeFinderService();
-        return service.findDupes(name);
+        return service.findDupes(name, category);
     }
 }

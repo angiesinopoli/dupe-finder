@@ -13,7 +13,7 @@ public class DupeFinderService {
     private final ObjectMapper mapper = new ObjectMapper();
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public List<Map<String, Object>> findDupes(String productName) throws Exception {
+    public List<Map<String, Object>> findDupes(String productName, String category) throws Exception {
         // Step 1: find the target product and its ingredients
         String searchUrl = "https://world.openbeautyfacts.org/cgi/search.pl"
                 + "?search_terms=" + productName
@@ -44,7 +44,7 @@ public class DupeFinderService {
 
         // Step 2: fetch a broader pool using the category
         String poolUrl = "https://world.openbeautyfacts.org/cgi/search.pl"
-                + "?search_terms=foundation"
+                + "?search_terms=" + category
                 + "&search_simple=1&action=process&json=1&page_size=100";
 
         String poolResponse = restTemplate.getForObject(poolUrl, String.class);
