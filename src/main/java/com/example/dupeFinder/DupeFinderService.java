@@ -17,7 +17,7 @@ public class DupeFinderService {
         // Step 1: find the target product and its ingredients
         String searchUrl = "https://world.openbeautyfacts.org/cgi/search.pl"
                 + "?search_terms=" + productName
-                + "&search_simple=1&action=process&json=1&page_size=10";
+                + "&search_simple=1&action=process&json=1&page_size=10&lc=en&cc=us";
 
         String response = restTemplate.getForObject(searchUrl, String.class);
         JsonNode products = mapper.readTree(response).path("products");
@@ -45,7 +45,7 @@ public class DupeFinderService {
         // Step 2: fetch a broader pool using the category
         String poolUrl = "https://world.openbeautyfacts.org/cgi/search.pl"
                 + "?search_terms=" + category
-                + "&search_simple=1&action=process&json=1&page_size=100";
+                + "&search_simple=1&action=process&json=1&page_size=500&lc=en&cc=us";
 
         String poolResponse = restTemplate.getForObject(poolUrl, String.class);
         JsonNode poolProducts = mapper.readTree(poolResponse).path("products");
@@ -76,9 +76,13 @@ public class DupeFinderService {
             if (similarity > 0.1) {
                 Map<String, Object> result = new LinkedHashMap<>();
                 result.put("product_name", name);
+                result.put("brand", p.path("brands").asText());
                 result.put("similarity_score", Math.round(similarity * 100) + "%");
                 result.put("shared_ingredients", intersection.size());
                 result.put("shared_ingredient_list", new ArrayList<>(intersection));
+                String img = p.path("image_front_url").asText();
+                if (img.isEmpty()) img = p.path("image_url").asText();
+                result.put("image_url", img);
                 dupes.add(result);
             }
         }
